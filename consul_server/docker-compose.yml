@@ -1,27 +1,20 @@
 version: "2"
 services:
   consul_template1:
-    build: .
-    links:
-      - consul1:consul
-    command: "consul-template -consul=consul:8500 -config=/tmp/haproxy/haproxy.json -dry"
-
-  haproxy:
-    image: "sirile/haproxy"
-    container_name: rest
-    hostname: "server1"
+    build: ./consul-template
+    container_name: consul_template
     ports:
       - 80:80
-      - 1936:1936
-    environment:
-      - SERVICE_NAME=rest
     links:
       - consul1:consul
-    command: "-consul=consul:8500"
+    volumes:
+      - "./consul-template/config/haproxy.json:/tmp/haproxy/haproxy.json"
+      - "./consul-template/config/haproxy.ctmpl:/tmp/haproxy/haproxy.ctmpl"
+    command: "consul-template -consul=consul:8500 -config=/tmp/haproxy/haproxy.json"
 
   consul1:
     image: "progrium/consul:latest"
-    container_name: "${CONTAINER_NAME}"
+    container_name: consul
     hostname: "${HOST_IP_E}"
     ports:
       - "${HOST_IP_E}:8300:8300"
@@ -32,13 +25,11 @@ services:
       - "${HOST_IP_E}:8400:8400"
       - "${HOST_IP_E}:8500:8500"
       - "${DNS_IP_E}:53:53/udp"
-    command: "-server -advertise ${HOST_IP_E} -bootstrap-expect 3"
-
-    #docker run --dns ${DNS_IP_E} --rm haproxy 
-    #consul-template -consul=consul.service.consul:8500 -config=/tmp/haproxy.json -dry"
+    command: "-server -advertise ${HOST_IP_E} -bootstrap-expect 1"
 
   registrator:
     image: gliderlabs/registrator:master
+    container_name: registrator
     hostname: registrator
     links:
       - consul1:consul

@@ -3,7 +3,7 @@ global
     log 127.0.0.1   local1 notice
     debug
     stats timeout 30s
-    maxconn 4096
+    maxconn {{with $maxconn:=key "service/haproxy/maxconn"}}{{$maxconn}}{{else}}4096{{end}}
 
 defaults
     log global
@@ -17,7 +17,7 @@ defaults
 
 frontend http-in
     stats enable
-    stats uri /haproxy?stats
+    stats uri /stats
     bind *:80{{range $i,$a:=services}}{{$path:=.Name}}{{range .Tags}}{{if eq . "rest"}}
     acl app{{$i}} path_beg -i /{{$path}}{{end}}{{end}}{{end}}
     {{range $i,$a:=services}}{{range .Tags}}{{if eq . "rest"}}
@@ -30,5 +30,4 @@ backend srvs_app{{$i}}
     option forwardfor
     option httpchk HEAD / HTTP/1.1\r\nHost:localhost
     reqrep ^([^\ ]*\ /){{$path}}[/]?(.*)     \1\2{{range $c,$d:=service $a.Name}}
-    server host{{$c}} {{.Address}}:{{.Port}} check{{end}}{{end}}{{end}}{{end}}
-
+    server host{{$c}} {{.NodeAddress}}:{{.Port}} check{{end}}{{end}}{{end}}{{end}}
