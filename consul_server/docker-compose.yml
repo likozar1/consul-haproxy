@@ -1,0 +1,47 @@
+version: "2"
+services:
+  consul_template1:
+    build: .
+    links:
+      - consul1:consul
+    command: "consul-template -consul=consul:8500 -config=/tmp/haproxy/haproxy.json -dry"
+
+  haproxy:
+    image: "sirile/haproxy"
+    container_name: rest
+    hostname: "server1"
+    ports:
+      - 80:80
+      - 1936:1936
+    environment:
+      - SERVICE_NAME=rest
+    links:
+      - consul1:consul
+    command: "-consul=consul:8500"
+
+  consul1:
+    image: "progrium/consul:latest"
+    container_name: "${CONTAINER_NAME}"
+    hostname: "${HOST_IP_E}"
+    ports:
+      - "${HOST_IP_E}:8300:8300"
+      - "${HOST_IP_E}:8301:8301"
+      - "${HOST_IP_E}:8301:8301/udp"
+      - "${HOST_IP_E}:8302:8302"
+      - "${HOST_IP_E}:8302:8302/udp"
+      - "${HOST_IP_E}:8400:8400"
+      - "${HOST_IP_E}:8500:8500"
+      - "${DNS_IP_E}:53:53/udp"
+    command: "-server -advertise ${HOST_IP_E} -bootstrap-expect 3"
+
+    #docker run --dns ${DNS_IP_E} --rm haproxy 
+    #consul-template -consul=consul.service.consul:8500 -config=/tmp/haproxy.json -dry"
+
+  registrator:
+    image: gliderlabs/registrator:master
+    hostname: registrator
+    links:
+      - consul1:consul
+    volumes:
+     - "/var/run/docker.sock:/tmp/docker.sock"
+    command: -internal consul://consul:8500

@@ -1,0 +1,5 @@
+template {
+  source = "/tmp/haproxy/haproxy.ctmpl"
+  destination = "/tmp/haproxy/haproxy.cfg"
+  command = "haproxy -f /tmp/haproxy/haproxy.cfg -sf $(pidof haproxy) &"
+}
