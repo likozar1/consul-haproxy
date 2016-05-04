@@ -15,6 +15,13 @@ $ vagrant plugin install vagrant-reload
 
 Create Vagrantfile similar to Vagrantfile inside `example` directory in the repository.
 
+Create script similar to script inside `example` directory. Script installs Docker and Docker-compose.
+Specify path to script that will be executed on guest machine.
+
+```ruby
+	config.vm.provision "shell", path: "~/script.sh"
+```
+
 Copy `consul_server` and `consul_worker` to consul_haproxy folder inside your home directory.
 
 Sync consul_haproxy folder to the guest machine:
