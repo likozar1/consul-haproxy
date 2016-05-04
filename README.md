@@ -1,7 +1,7 @@
 # Autoscaled load balancing
 
 * Automatic container registration using [Consul](https://hub.docker.com/r/progrium/consul/) and [Registrator](https://hub.docker.com/r/gliderlabs/registrator/)
-* Load balancing containers with [Haproxy](server.vm.provision :docker) and [Consul-templates](https://github.com/hashicorp/consul-template)
+* Load balancing containers with [Haproxy](http://cbonte.github.io/haproxy-dconv/configuration-1.7.html) and [Consul-templates](https://github.com/hashicorp/consul-template)
 
 ## Install vagrant plugins
 
