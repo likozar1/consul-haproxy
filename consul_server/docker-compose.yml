@@ -15,7 +15,6 @@ services:
   consul1:
     image: "progrium/consul:latest"
     container_name: consul
-    hostname: "${HOST_IP_E}"
     ports:
       - "${HOST_IP_E}:8300:8300"
       - "${HOST_IP_E}:8301:8301"

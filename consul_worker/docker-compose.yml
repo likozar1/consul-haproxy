@@ -2,8 +2,7 @@ version: "2"
 services:
   consul1:
     image: "progrium/consul:latest"
-    container_name: "${CONTAINER_NAME}"
-    hostname: "${HOST_IP_E}"
+    container_name: "consul"
     ports:
       - "${HOST_IP_E}:8300:8300"
       - "${HOST_IP_E}:8301:8301"
@@ -18,6 +17,7 @@ services:
 
   registrator:
     image: gliderlabs/registrator:master
+    container_name: "registrator"
     hostname: registrator
     links:
       - consul1:consul
